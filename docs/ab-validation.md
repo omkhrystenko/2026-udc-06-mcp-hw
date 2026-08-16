@@ -47,6 +47,15 @@ SKU, що потребують дозамовлення (9): DK-4001, WC-8002, D
 Конфіг: `.mcp.json` як є (filesystem + memory + catalog). У `system/init`
 хост відрапортував `catalog: connected`.
 
+```bash
+claude -p 'Which products in our catalog need reordering right now, and what is the
+total value of the stock we are currently holding? Give me the SKUs and
+the total as a number.' \
+  --strict-mcp-config --mcp-config .mcp.json \
+  --allowedTools "mcp__catalog" "mcp__filesystem" "Read" "Glob" "Grep" "Bash" \
+  --output-format stream-json --verbose --model sonnet
+```
+
 **Що зробив агент:**
 
 1. `ToolSearch` — підтягнув схеми `mcp__catalog__low_stock` і
@@ -76,7 +85,9 @@ HS-5002, SS-1102, KB-1002, CB-7003
 запущено новий процес:
 
 ```bash
-claude -p '<промпт вище дослівно>' \
+claude -p 'Which products in our catalog need reordering right now, and what is the
+total value of the stock we are currently holding? Give me the SKUs and
+the total as a number.' \
   --strict-mcp-config --mcp-config docs/mcp/mcp-run-b.json \
   --allowedTools "mcp__filesystem" "Read" "Glob" "Grep" "Bash" \
   --output-format stream-json --verbose --model sonnet

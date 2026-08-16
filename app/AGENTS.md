@@ -45,5 +45,25 @@ them.
 - Never add real business data, PII, or secrets here. Everything is synthetic
   on purpose.
 
-<!-- Task A adds a "## MCPs" section here, documenting the servers this
-     project expects to have connected and what each is for. -->
+## MCPs
+
+Servers this project expects to have connected. Config lives in `.mcp.json` at
+the repo root (project-scoped, committed); permission rules in
+`.claude/settings.json`. Full write-up: `docs/mcp/servers.md`; threat model:
+`docs/mcp/SECURITY.md`.
+
+| Server | What it is for here | Scope | Notes |
+|---|---|---|---|
+| `catalog` (`mcp-server/`, own) | Answer catalog questions through the tested domain functions instead of re-deriving them from raw JSON | imports `app/dist/index.js`, which reads `app/data/catalog.json` only | read-only; tools `search_inventory`, `check_stock`, `low_stock`, `inventory_value`; resource `inventory://catalog` |
+| `filesystem` `@2026.7.10` | Read the raw seed data without shelling out | `./app/data` only — not the repo root, not `$HOME` | ships 4 write tools; they are denied in `.claude/settings.json` — **never edit `data/catalog.json`** |
+| `memory` `@2026.7.4` | Keep notes across sessions | one graph file, `.mcp-memory/ws06-graph.json` (gitignored) | the only server here that writes by design |
+
+Working rules for an agent in `app/`:
+
+- Prefer the `catalog` tools over reading `data/catalog.json` and doing the
+  arithmetic yourself — `lowStock` is `stock <= reorderLevel`, and re-deriving
+  that rule from the data is exactly how it drifts to `<`.
+- After changing anything in `src/`, run `npm run build`: the MCP server imports
+  `dist/`, so a stale build means the server answers with old logic.
+- Server versions in `.mcp.json` are pinned on purpose. Do not switch them to
+  `@latest`.

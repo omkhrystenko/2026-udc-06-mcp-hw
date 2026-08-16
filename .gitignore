@@ -35,6 +35,10 @@ yarn-error.log*
 # Windows Git Bash safety: prevent accidental NUL device files
 nul
 
+# MCP memory server's knowledge graph (MEMORY_FILE_PATH in .mcp.json).
+# Local agent notes, not project data.
+.mcp-memory/
+
 # Local agent state — but DO commit .mcp.json (project-scoped MCP config,
 # it is meant to be shared with the team) and .claude/settings.json if you
 # deliberately scope permissions there.

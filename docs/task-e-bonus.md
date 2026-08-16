@@ -6,11 +6,16 @@
 
 ```bash
 cd mcp-server
-npx -y @modelcontextprotocol/inspector --cli node ./dist/server.js --method tools/list
-npx -y @modelcontextprotocol/inspector --cli node ./dist/server.js --method resources/list
-npx -y @modelcontextprotocol/inspector --cli node ./dist/server.js \
+npx -y @modelcontextprotocol/inspector@1.0.1 --cli node ./dist/server.js --method tools/list
+npx -y @modelcontextprotocol/inspector@1.0.1 --cli node ./dist/server.js --method resources/list
+npx -y @modelcontextprotocol/inspector@1.0.1 --cli node ./dist/server.js \
   --method tools/call --tool-name check_stock --tool-arg sku=ZZ-9999
 ```
+
+Версія зафіксована на `1.0.1` не з примхи: `latest` зараз — `2.2.0` з
+`engines.node >= 22.19.0`, а тут Node `22.14.0`. Саме тому всі виводи нижче —
+від Inspector v1 (звідси й його попередження про deprecated). Якщо у вас Node
+`22.19+`, беріть `@2.2.0` — але тоді й вивід буде інший, ніж процитований тут.
 
 ## Що побачили
 

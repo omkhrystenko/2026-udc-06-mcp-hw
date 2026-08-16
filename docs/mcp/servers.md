@@ -65,8 +65,8 @@ deprecated. Справжня межа — права ОС/пісочниця, а
 |---|---|
 | **Навіщо** | Knowledge graph між сесіями: зафіксувати висновки по домашці (які SKU в дефіциті, які рішення щодо scope) так, щоб вони пережили новий чат. Це єдиний сервер тут, який щось запам'ятовує. |
 | **Транспорт** | stdio |
-| **Як запускається** | `npx -y @modelcontextprotocol/server-memory@2026.7.4` |
-| **Область доступу (scope)** | Один файл графа — `MEMORY_FILE_PATH=./.mcp-memory/ws06-graph.json`. За замовчуванням сервер пише граф поруч зі своїм пакетом у `node_modules`, тобто **глобально для всіх проєктів**; явний шлях робить пам'ять локальною для цього репо. Тека в `.gitignore`. |
+| **Як запускається** | `node ./scripts/memory-server.mjs` — тонкий launcher, який ставить `MEMORY_FILE_PATH` і запускає `npx -y @modelcontextprotocol/server-memory@2026.7.4` |
+| **Область доступу (scope)** | Один файл графа — `<repo>/.mcp-memory/ws06-graph.json`, абсолютний шлях, тека в `.gitignore`. Чому через launcher, а не просто `env` у конфізі — див. нижче. |
 | **Секрети** | Немає |
 | **Версія** | Зафіксована `@2026.7.4` |
 
@@ -78,8 +78,29 @@ deprecated. Справжня межа — права ОС/пісочниця, а
 графа). Це прийнято свідомо: сервер без запису безглуздий, а писати він може
 рівно в один гітігнорений файл.
 
+⚠️ **Пастка, на якій я спіймався і яку варто знати.** Очевидний варіант
+`"env": {"MEMORY_FILE_PATH": "./.mcp-memory/ws06-graph.json"}` **не працює**:
+сервер розв'язує відносний шлях **від власного каталогу модуля**, а не від cwd,
+і не створює батьківську теку. На практиці замість repo-local пам'яті
+отримуємо помилку:
+
+```text
+ENOENT: no such file or directory, open
+'C:\Users\...\npm-cache\_npx\<hash>\node_modules\@modelcontextprotocol\
+ server-memory\dist\.mcp-memory\ws06-graph.json'
+```
+
+Тобто конфіг «виглядав правильно», сервер підключався, tools були в списку — і
+кожен запис у граф тихо падав. Тому запуск іде через
+[`scripts/memory-server.mjs`](../../scripts/memory-server.mjs): він рахує шлях
+від власного розташування (корінь репо), робить `mkdir -p` і передає далі
+**абсолютний** `MEMORY_FILE_PATH`.
+
 **Перевірка, що працює:** `initialize` + `tools/list` по stdio → у stderr
 `Knowledge Graph MCP Server running on stdio`, у відповіді — усі 9 tools.
+Окремо перевірено запис: `create_entities` запущений **з іншого cwd** (`C:\`)
+створив `<repo>/.mcp-memory/ws06-graph.json` із очікуваним вмістом — тобто
+scope справді repo-local, а не «як пощастить».
 
 ---
 
@@ -100,8 +121,10 @@ deprecated. Справжня межа — права ОС/пісочниця, а
 категорії, загальна вартість, список SKU на дозамовлення).
 
 **Перевірка, що працює:** з кореня репо — `npx -y
-@modelcontextprotocol/inspector --cli node ./mcp-server/dist/server.js --method
-tools/list` (див. [`task-e-bonus.md`](../task-e-bonus.md))
+@modelcontextprotocol/inspector@1.0.1 --cli node ./mcp-server/dist/server.js
+--method tools/list` (див. [`task-e-bonus.md`](../task-e-bonus.md); версія
+Inspector зафіксована свідомо — `latest` це `2.2.0`, який вимагає Node
+`>=22.19.0`, а тут Node `22.14.0`)
 і реальний прогін у Claude Code — агент викликав `mcp__catalog__low_stock` та
 `mcp__catalog__inventory_value` (див. [`ab-validation.md`](../ab-validation.md)).
 

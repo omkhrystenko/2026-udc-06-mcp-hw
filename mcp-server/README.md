@@ -50,11 +50,14 @@ node ./dist/server.js                             # висить і чекає J
 ## Перевірка
 
 ```bash
-npx -y @modelcontextprotocol/inspector --cli node ./dist/server.js --method tools/list
-npx -y @modelcontextprotocol/inspector --cli node ./dist/server.js --method resources/list
-npx -y @modelcontextprotocol/inspector --cli node ./dist/server.js \
+npx -y @modelcontextprotocol/inspector@1.0.1 --cli node ./dist/server.js --method tools/list
+npx -y @modelcontextprotocol/inspector@1.0.1 --cli node ./dist/server.js --method resources/list
+npx -y @modelcontextprotocol/inspector@1.0.1 --cli node ./dist/server.js \
   --method tools/call --tool-name check_stock --tool-arg sku=KB-1002
 ```
+
+Версія Inspector зафіксована: `latest` — це `2.2.0` з `engines.node >=22.19.0`,
+а тут Node `22.14.0`. На Node `22.19+` можна брати `@2.2.0`.
 
 Або напряму по stdio, без Inspector:
 

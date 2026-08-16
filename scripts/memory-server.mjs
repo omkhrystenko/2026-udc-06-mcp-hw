@@ -26,13 +26,41 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const memoryFile = resolve(repoRoot, ".mcp-memory", "ws06-graph.json");
 mkdirSync(dirname(memoryFile), { recursive: true });
 
-// Pinned on purpose — see docs/mcp/SECURITY.md.
+/**
+ * Do NOT forward the whole environment. Passing `...process.env` hands every
+ * variable the host happens to hold — GH_TOKEN, NPM_TOKEN, cloud credentials —
+ * to a package downloaded by npx at launch. The memory server needs none of
+ * them: only what npx/node themselves require to run, plus the path we set.
+ */
+const PASSTHROUGH = [
+  "PATH",
+  "Path",
+  "SystemRoot",
+  "windir",
+  "ComSpec",
+  "TEMP",
+  "TMP",
+  "APPDATA",
+  "LOCALAPPDATA",
+  "USERPROFILE",
+  "HOME",
+  "PATHEXT",
+  "PROCESSOR_ARCHITECTURE",
+  "NODE_EXTRA_CA_CERTS",
+];
+
+const env = { MEMORY_FILE_PATH: memoryFile };
+for (const key of PASSTHROUGH) {
+  if (process.env[key] !== undefined) env[key] = process.env[key];
+}
+
+// Version pinned on purpose — see docs/mcp/SECURITY.md.
 const child = spawn(
   "npx",
   ["-y", "@modelcontextprotocol/server-memory@2026.7.4"],
   {
     stdio: "inherit", // stdio transport: the host talks straight to the child
-    env: { ...process.env, MEMORY_FILE_PATH: memoryFile },
+    env,
     shell: process.platform === "win32", // npx is a .cmd shim on Windows
   },
 );

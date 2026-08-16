@@ -1,0 +1,20 @@
+{
+  "_comment": "Task D, прогін B: копія .mcp.json БЕЗ власного сервера `catalog`. filesystem і memory лишаються підключеними — вимикається рівно одна змінна. Використовується як `claude -p ... --strict-mcp-config --mcp-config docs/mcp/mcp-run-b.json` з кореня репо.",
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem@2026.7.10",
+        "./app/data"
+      ]
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory@2026.7.4"],
+      "env": {
+        "MEMORY_FILE_PATH": "./.mcp-memory/ws06-graph.json"
+      }
+    }
+  }
+}

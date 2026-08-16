@@ -40,7 +40,7 @@ read-only-режиму в нього немає. Тому вони явно за
 напряму по stdio. У stderr сервера видно рядок, заради якого й варто було
 дивитися:
 
-```
+```text
 Secure MCP Filesystem Server running on stdio
 Client does not support MCP Roots, using allowed directories set from server args: [
   'D:\\...\\2026-udc-06-mcp-hw\\app\\data'
@@ -99,8 +99,9 @@ deprecated. Справжня межа — права ОС/пісочниця, а
 **Resource:** `inventory://catalog` — JSON-зведення (кількість товарів,
 категорії, загальна вартість, список SKU на дозамовлення).
 
-**Перевірка, що працює:** `npx @modelcontextprotocol/inspector --cli node
-./dist/server.js --method tools/list` (див. [`task-e-bonus.md`](../task-e-bonus.md))
+**Перевірка, що працює:** з кореня репо — `npx -y
+@modelcontextprotocol/inspector --cli node ./mcp-server/dist/server.js --method
+tools/list` (див. [`task-e-bonus.md`](../task-e-bonus.md))
 і реальний прогін у Claude Code — агент викликав `mcp__catalog__low_stock` та
 `mcp__catalog__inventory_value` (див. [`ab-validation.md`](../ab-validation.md)).
 

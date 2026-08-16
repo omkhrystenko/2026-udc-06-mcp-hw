@@ -67,3 +67,9 @@ Working rules for an agent in `app/`:
   `dist/`, so a stale build means the server answers with old logic.
 - Server versions in `.mcp.json` are pinned on purpose. Do not switch them to
   `@latest`.
+- **Secrets: `${ENV_VAR}` only.** None of the three servers above needs a token,
+  and that is deliberate. If a future server does, reference it in `.mcp.json`
+  as `${SOME_TOKEN}`, put the value in `.env` (gitignored), and add the name to
+  `.env.example`. A literal key must never appear in `.mcp.json`, in
+  `.claude/settings.json`, or in any doc under `docs/` — including as an
+  "example".

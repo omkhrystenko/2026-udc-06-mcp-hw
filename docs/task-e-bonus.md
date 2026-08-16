@@ -34,7 +34,7 @@ npx -y @modelcontextprotocol/inspector --cli node ./dist/server.js \
 **Знайдений баг: `search_inventory` без аргументу падав на валідації.**
 Виклик без `query` повертав:
 
-```
+```text
 Input validation error: Invalid arguments for tool search_inventory:
 query: Invalid input: expected string, received undefined
 ```

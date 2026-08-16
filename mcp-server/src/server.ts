@@ -96,7 +96,8 @@ server.registerTool(
     annotations: readOnly,
   },
   async ({ sku }) => {
-    const product = findBySku(loadCatalog(), sku);
+    const catalog = loadCatalog();
+    const product = findBySku(catalog, sku);
     if (!product) {
       return {
         content: [
@@ -108,7 +109,10 @@ server.registerTool(
         isError: true,
       };
     }
-    const needsReorder = product.stock <= product.reorderLevel;
+    // Ask the domain, don't restate the rule: `lowStock` owns the definition
+    // of "needs reordering" (and its boundary is `<=`, not `<`). Re-deriving
+    // it here is exactly the drift this server exists to prevent.
+    const needsReorder = lowStock(catalog).some((p) => p.sku === product.sku);
     return {
       content: [
         {
